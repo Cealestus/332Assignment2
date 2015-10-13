@@ -215,6 +215,40 @@ exit(void)
   panic("zombie exit");
 }
 
+
+int
+waitstat(int *created, int *ended)
+{
+	struct proc *p;
+	int havekids;
+
+	acquire(&ptable.lock);
+	for(;;)
+	{
+	   havekids=0;
+	   for(p = ptable.proc; p< &ptable.proc[NPROC]; p++)
+	   {
+	      if(p->parent != proc)
+	      {
+		 continue;
+	      }
+	      havekids=1;
+	      if(p->state == ZOMBIE)
+	      {
+		return *ended - *created;
+       	      }
+	   }
+	
+
+	   // No point waiting if we don't have any children.
+	   if(!havekids || proc->killed){
+	      release(&ptable.lock);
+	      return -1;
+	   }
+	   sleep(proc, &ptable.lock);
+	}
+}
+
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
 int
