@@ -217,7 +217,7 @@ exit(void)
 
 
 int
-waitstat(int *created, int *ended)
+sys_waitstat(int *created, int *ended)
 {
 	struct proc *p;
 	int havekids;
