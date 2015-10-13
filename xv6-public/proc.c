@@ -162,7 +162,11 @@ fork(void)
   acquire(&ptable.lock);
   np->state = RUNNABLE;
   release(&ptable.lock);
-  
+  // acqure the ticks lock to set created to ticks and then release the tickslock
+  acquire(&tickslock);
+  np->created  = ticks;
+  release(&tickslock);
+
   return pid;
 }
 
@@ -425,6 +429,10 @@ kill(int pid)
     }
   }
   release(&ptable.lock);
+  // acquire the ticks lock and end the timer and then release the tickslock
+  acquire(&tickslock);
+  np->ended  = ticks;
+  release(&tickslock);
   return -1;
 }
 
