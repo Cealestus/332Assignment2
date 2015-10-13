@@ -235,8 +235,10 @@ waitstat(int *created, int *ended)
 	      havekids=1;
 	      if(p->state == ZOMBIE)
 	      {
+		release(&ptable.lock);
 		return *ended - *created;
        	      }
+
 	   }
 	
 
