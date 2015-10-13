@@ -431,7 +431,7 @@ kill(int pid)
   release(&ptable.lock);
   // acquire the ticks lock and end the timer and then release the tickslock
   acquire(&tickslock);
-  np->ended  = ticks;
+  p->ended  = ticks;
   release(&tickslock);
   return -1;
 }
