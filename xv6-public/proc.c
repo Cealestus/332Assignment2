@@ -215,7 +215,7 @@ exit(void)
   panic("zombie exit");
 }
 
-
+/*
 int
 waitstat(int *created, int *ended)
 {
@@ -250,6 +250,7 @@ waitstat(int *created, int *ended)
 	   sleep(proc, &ptable.lock);
 	}
 }
+*/
 
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.

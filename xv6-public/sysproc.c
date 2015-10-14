@@ -6,6 +6,12 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "spinlock.h"
+
+struct{
+	struct spinlock lock;
+	struct proc proc[NPROC];
+}ptable;
 
 int
 sys_fork(void)
@@ -90,6 +96,43 @@ sys_uptime(void)
   return xticks;
 }
 
-int sys_waitstat(void){
-	return waitstat((int*)proc->created, (int*)proc->ended);
+int sys_waitstat(int* turnaround, int* running){
+	struct proc *p;
+	int havekids;
+
+	acquire(&ptable.lock);
+	for(;;){
+		//Scan through looking for zombie children
+		havekids = 0;
+		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+			if(p->parent != proc){
+				continue;
+			}
+			havekids = 1;
+			if(p->state == ZOMBIE){
+				//found one
+				kfree(p->kstack);
+				p->kstack = 0;
+				freevm(p->pgdir);
+				p->state = UNUSED;
+				p->pid = 0;
+				p->parent = 0;
+				p->name[0] = 0;
+				p->killed = 0;
+				release(&ptable.lock);
+				*turnaround = (p->ended) - (p->created);
+				*running = p->running;
+				return 0;
+			}
+		}
+
+		//No point waiting if we don't have any children
+		if(!havekids || proc->killed){
+		release(&ptable.lock);
+		return -1;
+		}
+
+		//Wait for children to exit. (See wakeup1 call in proc_exit)
+		sleep(proc, &ptable.lock);
+	}
 }
