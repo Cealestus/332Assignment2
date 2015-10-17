@@ -69,7 +69,19 @@ struct proc {
   uint created;
   uint ended;
   uint running;
+
+  proc* next;			// pointer to point to next process
+  proc* previous;		// pointer to point to previous process
+
 };
+
+// added a struct for the queues 
+struct queue {
+
+	proc* head;		// a pointer to point to the head of the queue
+	proc* tail;		// a pointer to point to the tail of the queue
+};
+
 
 // Process memory is laid out contiguously, low addresses first:
 //   text

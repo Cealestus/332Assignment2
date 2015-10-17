@@ -10,6 +10,12 @@
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
+
+  // create three queues of high medium and low priority
+  struct queue high;
+  struct queue medium;
+  struct queue low;
+
 } ptable;
 
 static struct proc *initproc;
