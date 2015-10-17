@@ -7,10 +7,12 @@ int main(int argc, char *argv[]){
 	int running;
 	int i, j, k, N, C, sum, sum2;
 	int i2;
-	N = 4000;
+	N = atoi(argv[1]);
 	sum = 0;
 	C = 0;
 	sum2 = 0;
+
+	printf(1, "argc is: %d, N is: %d,\n", argc, N);
 
 	for(j = 1; j < 21; j++){
 		pid = fork();
