@@ -546,7 +546,7 @@ procdump(void)
 
 // function to put he process in a queue
 void
-queuePush(struct queue q,struct proc p)
+queuePush(struct queue *q,struct proc *p)
 }
 	if(q->tail == NULL)
 	{
