@@ -8,6 +8,7 @@ struct rtcdate;
 struct spinlock;
 struct stat;
 struct superblock;
+struct queue;
 
 // bio.c
 void            binit(void);
