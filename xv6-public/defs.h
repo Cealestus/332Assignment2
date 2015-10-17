@@ -8,6 +8,7 @@ struct rtcdate;
 struct spinlock;
 struct stat;
 struct superblock;
+struct queue;
 
 // bio.c
 void            binit(void);
@@ -119,7 +120,7 @@ int             wait(void);
 int		waitstat(int *, int*);
 void            wakeup(void*);
 void            yield(void);
-void		queuePush(struct queue, struct proc);
+void		queuePush(struct queue*, struct proc*);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
