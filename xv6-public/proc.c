@@ -120,7 +120,7 @@ userinit(void)
   // set priority to 0(high priority) for the new process
   p->priority = 0;
   // put the process in the highest priority queue
-  queuePush(ptable->high, p);
+  queuePush(&ptable.high, p);
 }
 
 // Grow current process's memory by n bytes.
