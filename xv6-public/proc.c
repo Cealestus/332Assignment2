@@ -71,7 +71,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 	
-	
+  // initialize created, ended, and running	
   acquire(&tickslock);
   p->created = ticks;
   p->ended = 0;
@@ -276,11 +276,6 @@ waitstat(int* turnaround, int* runtime)
 		sleep(proc, &ptable.lock);  //DOC: wait-sleep
 	  }
 }
-
-
-
-
-
 
 
 
