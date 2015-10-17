@@ -110,9 +110,6 @@ userinit(void)
 
   p->state = RUNNABLE;
 
-  p->created = 0;
-  p->ended = 0;
-  p->running = 0;
 }
 
 // Grow current process's memory by n bytes.
@@ -230,10 +227,6 @@ exit(void)
         wakeup1(initproc);
     }
   }
-
-  acquire(&tickslock);
-  p->ended = ticks;
-  release(&tickslock);
 
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
@@ -506,9 +499,7 @@ kill(int pid)
     }
   }
   release(&ptable.lock);
-  acquire(&tickslock);
-  p->ended = ticks;
-  release(&tickslock);
+
   return -1;
 }
 
