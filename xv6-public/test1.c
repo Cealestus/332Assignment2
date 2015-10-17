@@ -12,13 +12,13 @@ int main(int argc, char *argv[]){
 	C = 0;
 	sum2 = 0;
 
-	for(j = 1; j < 4; j++){
+	for(j = 1; j < 21; j++){
 		pid = fork();
 		if(pid <0){
 			printf(1, "Error\n");
 			exit();
 		} else if(pid == 0){
-			for (k = 1; k < 4; k ++){
+			for (k = 1; k < 11; k ++){
 				C = (1/k);
 				for(i = 1; i <= (21 - j)*N; i++){
 					sum += (1/((i/1) + C));
