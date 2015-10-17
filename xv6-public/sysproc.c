@@ -97,42 +97,15 @@ sys_uptime(void)
   return xticks;
 }
 
-int waitstat(int *turnaround, int *running){
-	struct proc *p;
-	int havekids, pid, turn, run;
+int sys_waitstat(void){
+	
+	int* turnaround;
+	int* runtime;
+	if(argptr(0, (char**)&turnaround, sizeof(int*)) <0)
+		return -1;
+	if(argptr(1,(char**)&runtime, sizeof(int*)) < 0)
+		return -1;
+	return waitstat(turnaround, runtime);
 
-	acquire(&ptable.lock);
-	for(;;){
-		havekids = 0;
-		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-			if(p->parent != proc){
-				continue;
-			}
-			havekids = 1;
-			if(p->state == ZOMBIE){
-				pid = p->pid;
-				kfree(p->kstack);
-				p->kstack = 0;
-				freevm(p->pgdir);
-				p->state = UNUSED;
-				p->pid = 0;
-				p->parent = 0;
-				p->name[0] = 0;
-				p->killed = 0;
-				turn = 5;
-				run = p->running;
-				cprintf("turn: %d, p->ended: %d\n", turn, p->ended);
-				turnaround = &turn;
-				running = &run;
-				release(&ptable.lock);
-				return pid;
-			}
-		}
-		if(!havekids || proc->killed){
-			release(&ptable.lock);
-			return -1;
-		}
 
-		sleep(proc, &ptable.lock);
-	}
 }
