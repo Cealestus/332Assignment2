@@ -184,9 +184,11 @@ fork(void)
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
   np->state = RUNNABLE;
+  np->priority=0;
+  queuePush(&ptable.high, np);
   release(&ptable.lock);
-
-
+  
+	
   return pid;
 }
 
@@ -220,10 +222,6 @@ exit(void)
   acquire(&tickslock);
   proc->ended = ticks;
   release(&tickslock);
-
-
-
-
 
   acquire(&ptable.lock);
 
@@ -353,8 +351,26 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      /*
       if(p->state != RUNNABLE)
         continue;
+	*/
+	
+	if(queueIsEmpty(&ptable.high) == 0){
+		p = ptable->high->head;
+		p->running++;
+		proc =p;
+		switchuvm(p);
+		p->state= RUNNING;
+		swtch(&cpu->scheduler, proc->context);
+		switchkvm();
+		p->priority=1;
+		deqeueue(&ptable.high);
+		queuePush(&ptable.med, p);
+	}
+	else if(
+
+
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -369,6 +385,7 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
+
     }
     release(&ptable.lock);
 
@@ -401,6 +418,8 @@ yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
   proc->state = RUNNABLE;
+  proc->priority=0;
+  queuePush(&ptable.high, proc);
   sched();
   release(&ptable.lock);
 }
@@ -472,8 +491,11 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
+    if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
+      p->priority = 0;
+      queuePush(&ptable.high, p);
+    }
 }
 
 // Wake up all processes sleeping on chan.
@@ -498,8 +520,11 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // Wake process from sleep if necessary.
-      if(p->state == SLEEPING)
+      if(p->state == SLEEPING){
         p->state = RUNNABLE;
+	p->priority = 0;
+	queuePush(&ptable.high, p);
+      }
       release(&ptable.lock);
       return 0;
     }
@@ -562,6 +587,46 @@ queuePush(struct queue *q,struct proc *p)
 		q->tail = p;
 	}
 }
+
+void
+queueIsEmpty(struct queue *q){
+	if(q->tail == NULL){
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+
+
+void
+deqeueue(struct queue *q)){
+
+	if(queueIsEmpty(q) ){
+		return;
+	}
+	else if( q->head == q->tail){
+		q->head = NULL;
+		q->tail = NULL;
+	}
+	else if(q->head->next == q->tail){
+		q->head->next= NULL;
+		q->head = q->tail;
+		q->tail->previous = NULL;
+	}
+	else 
+	{
+		q->head = q->head->next;
+		q->head->previous = NULL;
+	}
+
+
+
+
+
+
+
 
 
 

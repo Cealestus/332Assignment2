@@ -73,6 +73,7 @@ struct proc {
   struct proc* next;			// pointer to point to next process
   struct proc* previous;		// pointer to point to previous process
   int priority;			// pointer of process for queue, 0 is high , 1 is medium, 2 is low
+  int procmtimes;
 };
 
 // added a struct for the queues 
