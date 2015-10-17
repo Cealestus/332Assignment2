@@ -118,7 +118,7 @@ userinit(void)
   // set priority to 0(high priority) for the new process
   p->priority = 0;
   // put the process in the highest priority queue
-  ptable->high->head = 
+  queuePush(ptable->high, p);
 }
 
 // Grow current process's memory by n bytes.
@@ -543,3 +543,22 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+// function to put he process in a queue
+void
+queuePush(queue q, proc p)
+}
+	if(q->tail == NULL)
+	{
+		q->head = p;
+		q->tail = p;
+	}
+	else
+	{
+		q->tail->next = p;
+		p->previous= q->tail;
+		q->tail = p;
+	}
+}
+
+
