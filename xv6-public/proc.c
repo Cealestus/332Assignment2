@@ -13,7 +13,7 @@ struct {
 
   // create three queues of high medium and low priority
   struct queue high;
-  struct queue medium;
+  struct queue med;
   struct queue low;
 
 } ptable;
@@ -115,7 +115,10 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
-
+  // set priority to 0(high priority) for the new process
+  p->priority = 0;
+  // put the process in the highest priority queue
+  proc->high
 }
 
 // Grow current process's memory by n bytes.
@@ -133,7 +136,7 @@ growproc(int n)
     if((sz = deallocuvm(proc->pgdir, sz, sz + n)) == 0)
       return -1;
   }
-  proc->sz = sz;
+  proc->sz = sz;}}
   switchuvm(proc);
   return 0;
 }

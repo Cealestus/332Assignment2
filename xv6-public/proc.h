@@ -70,16 +70,16 @@ struct proc {
   uint ended;
   uint running;
 
-  proc* next;			// pointer to point to next process
-  proc* previous;		// pointer to point to previous process
-
+  struct proc* next;			// pointer to point to next process
+  struct proc* previous;		// pointer to point to previous process
+  int priority;			// pointer of process for queue, 0 is high , 1 is medium, 2 is low
 };
 
 // added a struct for the queues 
 struct queue {
 
-	proc* head;		// a pointer to point to the head of the queue
-	proc* tail;		// a pointer to point to the tail of the queue
+	struct proc* head;		// a pointer to point to the head of the queue
+	struct proc* tail;		// a pointer to point to the tail of the queue
 };
 
 
