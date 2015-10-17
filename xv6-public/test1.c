@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 			//wait();
 			waitstat(&turnaround, &running);
 			printf(1, "Turnaround: %d Running: %d\n", turnaround, running);
-			for(i2 = 1; i < 5*N; i++){
+			for(i2 = 1; i2 < 5*N; i2++){
 				sum2 += (1/((i2/1) + (1/j)));
 			}
 			printf(1, "Result of the %d'th sum of the parent is = %d \n", j, sum2);
