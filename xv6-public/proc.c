@@ -368,7 +368,7 @@ scheduler(void)
 		dequeue(&ptable.high);
 		queuePush(&ptable.med, p);
 	}
-	else if(){
+	else if(1){
 	}
 
 
@@ -603,7 +603,7 @@ queueIsEmpty(struct queue *q){
 
 
 void
-dequeue(struct queue *q)){
+dequeue(struct queue *q){
 
 	if(queueIsEmpty(q) ){
 		return;
