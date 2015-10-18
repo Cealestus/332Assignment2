@@ -121,7 +121,7 @@ int		waitstat(int *, int*);
 void            wakeup(void*);
 void            yield(void);
 void		queuePush(struct queue*, struct proc*);
-void 		queueIsEmpty(struct queue*);
+int 		queueIsEmpty(struct queue*);
 void		dequeue(struct queue*, struct proc*);
 
 

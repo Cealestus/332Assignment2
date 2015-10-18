@@ -588,7 +588,7 @@ queuePush(struct queue *q,struct proc *p)
 	}
 }
 
-void
+int
 queueIsEmpty(struct queue *q){
 	if(q->tail == NULL){
 		return 1;
