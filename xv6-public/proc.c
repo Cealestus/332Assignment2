@@ -351,14 +351,13 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      /*
+      
       if(p->state != RUNNABLE)
         continue;
-	*/
+	
 	
 	if(queueIsEmpty(&ptable.high) == 0){
 		p = ptable.high.head;
-		proc = p;
 		p->running++;
 		proc =p;
 		switchuvm(p);
@@ -369,22 +368,45 @@ scheduler(void)
 		dequeue(&ptable.high);
 		queuePush(&ptable.med, p);
 	}
-	else if(1){
+	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 0){
+		p = ptable.med.head;
+		p->running++;
+		proc =p;
+		switchuvm(p);
+		p->state= RUNNING;
+		swtch(&cpu->scheduler, proc->context);
+		switchkvm();
+		p->procmtimes++;
+
+		if(p->procmtimes == 10){
+			p->priority=2;
+			dequeue(&ptable.med);
+			queuePush(&ptable.low, p);
+		}
 	}
-
-
-
+	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 1 && queueIsEmpty(&ptable.low) == 0) {
+		p = ptable.low.head;
+		p->running++;
+		proc =p;
+		switchuvm(p);
+		p->state= RUNNING;
+		swtch(&cpu->scheduler, proc->context);
+		switchkvm();
+		p->procmtimes++;
+		
+	}
+      
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      p->running++;
+/*      p->running++;
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
       swtch(&cpu->scheduler, proc->context);
       switchkvm();
-
+*/
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
@@ -591,6 +613,8 @@ queuePush(struct queue *q,struct proc *p)
 	}
 }
 
+
+
 int
 queueIsEmpty(struct queue *q){
 	if(q->tail == NULL){
@@ -624,6 +648,29 @@ dequeue(struct queue *q){
 		q->head->previous = NULL;
 	}
 }
+
+
+void
+moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
+	while(queueIsEmpty(q2)==0){
+		p = q->head;
+		p->priority= 0;
+		queuePush(q1, p);
+		dequeue(q2);
+	}
+	while(queueIsEmpty(q3)==0){
+		p = q->head;
+		p->priority= 0;
+		queuePush(q1, p);
+		dequeue(q3);
+	}
+}
+
+
+	
+
+
+
 
 
 
