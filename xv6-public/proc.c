@@ -365,7 +365,7 @@ scheduler(void)
 		swtch(&cpu->scheduler, proc->context);
 		switchkvm();
 		p->priority=1;
-		deqeueue(&ptable.high);
+		dequeue(&ptable.high);
 		queuePush(&ptable.med, p);
 	}
 	else if(
@@ -601,7 +601,7 @@ queueIsEmpty(struct queue *q){
 
 
 void
-deqeueue(struct queue *q)){
+dequeue(struct queue *q)){
 
 	if(queueIsEmpty(q) ){
 		return;
