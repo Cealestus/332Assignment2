@@ -126,7 +126,6 @@ userinit(void)
   p->priority = 0;
   p->procmtimes =0;
   // put the process in the highest priority queue
-  cprintf("user int it\n");
   queuePush(&ptable.high, p);
 }
 
@@ -193,7 +192,6 @@ fork(void)
   np->state = RUNNABLE;
   np->priority=0;
   
-  cprintf("fork\n");
   queuePush(&ptable.high, np);
   release(&ptable.lock);
   
@@ -364,8 +362,7 @@ scheduler(void)
 
             
       runTimes= runTimes+1;
-      if (runTimes == moveup){
-	
+      if (runTimes == moveup){	
       	moveToHighQ(&ptable.high, &ptable.med, &ptable.low);
 	runTimes=0;
       }
@@ -376,7 +373,7 @@ scheduler(void)
 	
 		
 	if(queueIsEmpty(&ptable.high) == 0){
-		//cprintf("high queue");
+		//cprintf("pid: %d high queue\n", p->pid);
 		p = ptable.high.head;
 		p->running++;
 		proc =p;
@@ -386,11 +383,10 @@ scheduler(void)
 		switchkvm();
 		p->priority=1;
 		dequeue(&ptable.high);
-		cprintf("high to med\n");
 		queuePush(&ptable.med, p);
 	}
 	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 0){
-		//cprintf("med queue");
+		//cprintf("pid: %d med queue\n", p->pid);
 		p = ptable.med.head;
 		p->running++;
 		proc =p;
@@ -403,12 +399,11 @@ scheduler(void)
 		if(p->procmtimes == 10){
 			p->priority=2;
 			dequeue(&ptable.med);
-			cprintf("med to low\n");
 			queuePush(&ptable.low, p);
 		}
 	}
 	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 1 && queueIsEmpty(&ptable.low) == 0) {
-		//cprintf("low queue");
+		cprintf("pid: %d low queue\n", p->pid);
 		p = ptable.low.head;
 		p->running++;
 		proc =p;
@@ -543,7 +538,6 @@ wakeup1(void *chan)
     if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
       p->priority = 0;
-      cprintf("wakeup1");
       queuePush(&ptable.high, p);
     }
 }
@@ -615,9 +609,9 @@ procdump(void)
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
       for(i=0; i<10 && pc[i] != 0; i++)
-        cprintf(" %p", pc[i]);
+	      cprintf(" %p", pc[i]);
     }
-    cprintf("\n");
+      cprintf("\n");
   }
 }
 
@@ -638,7 +632,6 @@ queuePush(struct queue *q,struct proc *p)
 		q->tail->next = p;
 		p->previous= q->tail;
 		q->tail = p;
-		//cprintf(" adding to queue\n");
 	}
 }
 
@@ -674,6 +667,7 @@ dequeue(struct queue *q){
 	else 
 	{
 		q->head = q->head->next;
+		q->head->previous->next = NULL;
 		q->head->previous = NULL;
 	}
 }
@@ -696,7 +690,3 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 		dequeue(q3);
 	}
 }
-
-
-
-

@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
 	int turnaround, running;
 	int j;
 
-	for(j = 1; j < 11; j++){
+	for(j = 1; j < 3; j++){
 		pid = fork();
 		if(pid < 0){
 			printf(1, "Error\n");
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 			exit();
 		}else{
 			waitstat(&turnaround, &running);
-			printf(1, "pid: %d Turnaround: %d Running: %d\n", getpid(), turnaround, running);
+			printf(1, "parent: Turnaround: %d Running: %d\n", turnaround, running);
 		}
 	}
 	exit();
