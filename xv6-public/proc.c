@@ -56,6 +56,8 @@ allocproc(void)
 
 found:
   p->state = EMBRYO;
+  p->priority=0;
+  p->procmtimes =0;
   p->pid = nextpid++;
   release(&ptable.lock);
 
@@ -63,6 +65,7 @@ found:
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
     p->state = UNUSED;
+   
     return 0;
   }
   sp = p->kstack + KSTACKSIZE;
@@ -121,7 +124,9 @@ userinit(void)
   p->state = RUNNABLE;
   // set priority to 0(high priority) for the new process
   p->priority = 0;
+  p->procmtimes =0;
   // put the process in the highest priority queue
+  cprintf("user int it\n");
   queuePush(&ptable.high, p);
 }
 
@@ -187,6 +192,8 @@ fork(void)
   acquire(&ptable.lock);
   np->state = RUNNABLE;
   np->priority=0;
+  
+  cprintf("fork\n");
   queuePush(&ptable.high, np);
   release(&ptable.lock);
   
@@ -353,9 +360,12 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      
-      runTimes++;
+
+
+            
+      runTimes= runTimes+1;
       if (runTimes == moveup){
+	
       	moveToHighQ(&ptable.high, &ptable.med, &ptable.low);
 	runTimes=0;
       }
@@ -364,7 +374,9 @@ scheduler(void)
         continue;
 	
 	
+		
 	if(queueIsEmpty(&ptable.high) == 0){
+		//cprintf("high queue");
 		p = ptable.high.head;
 		p->running++;
 		proc =p;
@@ -374,9 +386,11 @@ scheduler(void)
 		switchkvm();
 		p->priority=1;
 		dequeue(&ptable.high);
+		cprintf("high to med\n");
 		queuePush(&ptable.med, p);
 	}
 	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 0){
+		//cprintf("med queue");
 		p = ptable.med.head;
 		p->running++;
 		proc =p;
@@ -389,10 +403,12 @@ scheduler(void)
 		if(p->procmtimes == 10){
 			p->priority=2;
 			dequeue(&ptable.med);
+			cprintf("med to low\n");
 			queuePush(&ptable.low, p);
 		}
 	}
 	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 1 && queueIsEmpty(&ptable.low) == 0) {
+		//cprintf("low queue");
 		p = ptable.low.head;
 		p->running++;
 		proc =p;
@@ -527,6 +543,7 @@ wakeup1(void *chan)
     if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
       p->priority = 0;
+      cprintf("wakeup1");
       queuePush(&ptable.high, p);
     }
 }
@@ -604,7 +621,10 @@ procdump(void)
   }
 }
 
-// function to put he process in a queue
+
+
+
+// function to put the process in a queue
 void
 queuePush(struct queue *q,struct proc *p)
 {
@@ -618,6 +638,7 @@ queuePush(struct queue *q,struct proc *p)
 		q->tail->next = p;
 		p->previous= q->tail;
 		q->tail = p;
+		//cprintf(" adding to queue\n");
 	}
 }
 
@@ -662,7 +683,6 @@ void
 moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 
 	struct proc *p;
-
 	while(queueIsEmpty(q2)==0){
 		p = q2->head;
 		p->priority= 0;
@@ -676,14 +696,6 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 		dequeue(q3);
 	}
 }
-
-
-	
-
-
-
-
-
 
 
 
