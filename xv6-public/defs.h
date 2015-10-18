@@ -123,7 +123,7 @@ void            yield(void);
 void		queuePush(struct queue*, struct proc*);
 int 		queueIsEmpty(struct queue*);
 void		dequeue(struct queue*);
-
+void		moveToHighQ(struct queue*, struct queue*, struct queue*);
 
 
 
