@@ -219,6 +219,7 @@ exit(void)
     }
   }
 
+
   begin_op();
   iput(proc->cwd);
   end_op();
@@ -358,8 +359,7 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-
-
+   
             
       runTimes= runTimes+1;
       if (runTimes == moveup){	
@@ -403,7 +403,7 @@ scheduler(void)
 		}
 	}
 	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 1 && queueIsEmpty(&ptable.low) == 0) {
-		cprintf("pid: %d low queue\n", p->pid);
+		//cprintf("pid: %d low queue\n", p->pid);
 		p = ptable.low.head;
 		p->running++;
 		proc =p;
@@ -463,6 +463,7 @@ yield(void)
   acquire(&ptable.lock);  //DOC: yieldlock
   proc->state = RUNNABLE;
   proc->priority=0;
+  //cprintf("yield\n");
   queuePush(&ptable.high, proc);
   sched();
   release(&ptable.lock);
@@ -514,6 +515,7 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   proc->chan = chan;
   proc->state = SLEEPING;
+
   sched();
 
   // Tidy up.
@@ -563,6 +565,7 @@ kill(int pid)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pid == pid){
       p->killed = 1;
+	
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING){
         p->state = RUNNABLE;
@@ -618,7 +621,7 @@ procdump(void)
 
 
 
-// function to put the process in a queue
+// queuePush to put the process in a queue at the tail
 void
 queuePush(struct queue *q,struct proc *p)
 {
@@ -636,7 +639,9 @@ queuePush(struct queue *q,struct proc *p)
 }
 
 
-
+//checking is the queue is empty
+//return 1 if it is
+// return 0 if it is not empty
 int
 queueIsEmpty(struct queue *q){
 	if(q->tail == NULL){
@@ -648,7 +653,8 @@ queueIsEmpty(struct queue *q){
 }
 
 
-
+// remove the head of the queue from the queue itself
+// and make all the responding changes to the pointers
 void
 dequeue(struct queue *q){
 
@@ -673,6 +679,8 @@ dequeue(struct queue *q){
 }
 
 
+// loop through the med queue and move all the processes to the high queue
+// and loop through the low queue and move all the processes to the high queue
 void
 moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 
@@ -690,3 +698,34 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 		dequeue(q3);
 	}
 }
+
+
+/*
+// search through the queue and remove the process from it
+void
+removeFromQueue(struct proc *p){
+	if(p->priority == 0){
+		
+
+
+	}
+	else if(p->priority == 1){
+	
+
+	}
+	else if(p->priority == 2){
+
+
+	}
+
+
+
+
+}
+*/
+
+
+
+
+
+
