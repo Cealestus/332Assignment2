@@ -652,6 +652,9 @@ dequeue(struct queue *q){
 
 void
 moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
+
+	struct proc *p;
+
 	while(queueIsEmpty(q2)==0){
 		p = q->head;
 		p->priority= 0;
@@ -668,12 +671,6 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 
 
 	
-
-
-
-
-
-
 
 
 
