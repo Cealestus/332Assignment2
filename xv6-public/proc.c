@@ -21,6 +21,8 @@ struct {
 } ptable;
 
 static struct proc *initproc;
+// amount of times the processes have run
+int runTimes = 0;
 
 int nextpid = 1;
 extern void forkret(void);
@@ -352,6 +354,12 @@ scheduler(void)
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       
+      runTimes++;
+      if (runTimes == moveup){
+      	movetToHighQ(&ptable.high, &ptable.med, &ptable.low);
+	runTimes=0;
+      }
+
       if(p->state != RUNNABLE)
         continue;
 	
