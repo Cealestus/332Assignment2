@@ -121,6 +121,11 @@ int		waitstat(int *, int*);
 void            wakeup(void*);
 void            yield(void);
 void		queuePush(struct queue*, struct proc*);
+void 		queueIsEmpty(struct queue*);
+void		dequeue(struct queue*, struct proc*);
+
+
+
 
 // swtch.S
 void            swtch(struct context**, struct context*);
