@@ -356,7 +356,7 @@ scheduler(void)
       
       runTimes++;
       if (runTimes == moveup){
-      	movetToHighQ(&ptable.high, &ptable.med, &ptable.low);
+      	moveToHighQ(&ptable.high, &ptable.med, &ptable.low);
 	runTimes=0;
       }
 
