@@ -656,13 +656,13 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 	struct proc *p;
 
 	while(queueIsEmpty(q2)==0){
-		p = q->head;
+		p = q2->head;
 		p->priority= 0;
 		queuePush(q1, p);
 		dequeue(q2);
 	}
 	while(queueIsEmpty(q3)==0){
-		p = q->head;
+		p = q3->head;
 		p->priority= 0;
 		queuePush(q1, p);
 		dequeue(q3);
