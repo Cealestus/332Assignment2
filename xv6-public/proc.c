@@ -622,7 +622,7 @@ dequeue(struct queue *q){
 		q->head = q->head->next;
 		q->head->previous = NULL;
 	}
-
+}
 
 
 
