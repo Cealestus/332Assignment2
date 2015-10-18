@@ -357,7 +357,7 @@ scheduler(void)
 	*/
 	
 	if(queueIsEmpty(&ptable.high) == 0){
-		p = ptable->high->head;
+		p = ptable.high.head;
 		p->running++;
 		proc =p;
 		switchuvm(p);
