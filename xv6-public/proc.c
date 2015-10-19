@@ -396,13 +396,14 @@ scheduler(void)
 		switchkvm();
 		p->procmtimes++;
 
-		if(p->procmtimes == 10){
+		if(p->procmtimes == mtimes){
 			p->priority=2;
 			dequeue(&ptable.med);
 			queuePush(&ptable.low, p);
 		}
 	}
-	else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 1 && queueIsEmpty(&ptable.low) == 0) {
+	//else if(queueIsEmpty(&ptable.high) == 1 && queueIsEmpty(&ptable.med) == 1 && queueIsEmpty(&ptable.low) == 0) {
+	else{
 		//cprintf("pid: %d low queue\n", p->pid);
 		p = ptable.low.head;
 		p->running++;
@@ -688,12 +689,14 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 	while(queueIsEmpty(q2)==0){
 		p = q2->head;
 		p->priority= 0;
+		p->procmtimes = 0;
 		queuePush(q1, p);
 		dequeue(q2);
 	}
 	while(queueIsEmpty(q3)==0){
 		p = q3->head;
 		p->priority= 0;
+		p->procmtimes = 0;
 		queuePush(q1, p);
 		dequeue(q3);
 	}

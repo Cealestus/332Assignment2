@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
 	int turnaround, running;
 	int j;
 	int sum,k,i,C;
-	for(j = 1; j < 21; j++){
+	for(j = 1; j < 11; j++){
 		pid = fork();
 		if(pid < 0){
 			printf(1, "Error\n");
