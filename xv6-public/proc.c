@@ -516,7 +516,7 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   proc->chan = chan;
   proc->state = SLEEPING;
-
+  removeFromQueue(proc, &ptable.high, &ptable.med, &ptable.low);
   sched();
 
   // Tidy up.
@@ -566,6 +566,8 @@ kill(int pid)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pid == pid){
       p->killed = 1;
+      // remove the process from the queue
+      removeFromQueue(p, &ptable.high, &ptable.med, &ptable.low);
 	
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING){
@@ -703,32 +705,81 @@ moveToHighQ(struct queue *q1, struct queue *q2, struct queue *q3){
 }
 
 
-/*
+
 // search through the queue and remove the process from it
 void
-removeFromQueue(struct proc *p){
-	if(p->priority == 0){
-		
+removeFromQueue(struct proc *p, struct queue *q1, struct queue *q2, struct queue *q3){
 
-
+	struct proc *delP;
+	if(p->priority == 0 && queueIsEmpty(q1)== 0){
+		if(p->pid == q1->head->pid) {
+			dequeue(q1);
+		}
+		else if ( q1->head->next == q1->tail) {
+			if(q1->tail->pid == p->pid)
+			{
+				q1->head->next= NULL;
+				q1->tail = q1->head;
+				q1->tail->previous = NULL;
+			}	
+		}
+		else {
+			delP = q1->head->next;
+			while(p->pid != delP->pid && delP->next != NULL){
+				delP = delP->next;
+			}
+			delP->next->previous = delP->previous;
+			delP->previous->next = delP->next;
+			delP->priority = 0;
+			delP->procmtimes = 0;
+			
+		}
 	}
-	else if(p->priority == 1){
-	
-
+	else if(p->priority == 1 && queueIsEmpty(q2)== 0){
+		if(p->pid == q2->head->pid )  {
+			dequeue(q2);
+		}
+		else if ( q2->head->next == q2->tail){
+			if(q2->tail->pid ==p->pid) {
+				q2->head->next = NULL;
+				q2->tail = q2->head;
+				q2->tail->previous = NULL;
+			}
+		}
+		else {
+			delP = q2->head->next;
+			while( p->pid != delP->pid && delP->next != NULL){
+				delP= delP->next;
+			}
+			delP->next->previous = delP->previous;
+			delP->previous->next = delP->next;
+			delP->priority = 0;
+			delP->procmtimes = 0;
+		}
 	}
-	else if(p->priority == 2){
+	else if(p->priority == 2 && queueIsEmpty(q3)== 0){
+		if(p->pid == q3->head->pid ){
+			dequeue(q3);
 
-
+		}
+		else if (q3->head->next == q3->tail) {
+			if(q3->tail->pid == p->pid) {
+				q3->head->next = NULL;
+				q3->tail = q3->head;
+				q3->tail->previous = NULL;
+			}
+		}
+		else {
+			delP = q3->head->next;
+			while(p->pid != delP->pid && delP->next != NULL){
+				delP= delP->next;
+			}
+			delP->next->previous = delP->previous;
+			delP->previous->next = delP->next;
+			delP->priority = 0;
+			delP->procmtimes = 0;
+		}
 	}
-
-
-
-
 }
-*/
-
-
-
-
 
 
