@@ -643,8 +643,7 @@ queuePush(struct queue *q,struct proc *p)
 		q->tail = p;
 	}
 	else if (q->tail == q->head)
-	{	
-		
+	{		
 		q->tail->next = p;
 		p->previous= q->tail;
 		q->tail = p;
@@ -654,13 +653,13 @@ queuePush(struct queue *q,struct proc *p)
 		q->tail->next = p;
 		p->previous= q->tail;
 		q->tail = p;
-
+		q->tail->next = NULL;
 	}
 }
 
 
-//checking is the queue is empty
-//return 1 if it is
+// checking is the queue is empty
+// return 1 if it is
 // return 0 if it is not empty
 int
 queueIsEmpty(struct queue *q){
