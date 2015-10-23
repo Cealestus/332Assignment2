@@ -16,7 +16,7 @@ int main(int argc, char *argv[]){
 			//printf(1, "pid: %d\n", getpid());
 			for (k = 1; k < 11; k ++){
 				C = (1/k);
-				for(i = 1; i <= (21 - j)*200; i++){
+				for(i = 1; i <= (21 - j)*90000; i++){
 					sum += (1/((i/1) + C));
 				}
 				printf(1, "Result of %d'th sum of the %d'th child is = %d\n", k, j + 1, sum);
