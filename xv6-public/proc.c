@@ -118,6 +118,15 @@ userinit(void)
   p->tf->esp = PGSIZE;
   p->tf->eip = 0;  // beginning of initcode.S
 
+
+  // initialize the three queues
+  ptable.high.head = NULL;
+  ptable.high.tail = NULL;
+  ptable.med.head = NULL;
+  ptable.med.tail = NULL;
+  ptable.low.head = NULL;
+  ptable.low.tail = NULL;
+
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
@@ -516,7 +525,7 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   proc->chan = chan;
   proc->state = SLEEPING;
-  removeFromQueue(proc, &ptable.high, &ptable.med, &ptable.low);
+ // removeFromQueue(proc, &ptable.high, &ptable.med, &ptable.low);
   sched();
 
   // Tidy up.
@@ -567,7 +576,7 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // remove the process from the queue
-      removeFromQueue(p, &ptable.high, &ptable.med, &ptable.low);
+      //removeFromQueue(p, &ptable.high, &ptable.med, &ptable.low);
 	
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING){
