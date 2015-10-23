@@ -576,7 +576,7 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // remove the process from the queue
-      //removeFromQueue(p, &ptable.high, &ptable.med, &ptable.low);
+      // removeFromQueue(p, &ptable.high, &ptable.med, &ptable.low);
 	
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING){
@@ -642,11 +642,19 @@ queuePush(struct queue *q,struct proc *p)
 		q->head = p;
 		q->tail = p;
 	}
-	else
-	{
+	else if (q->tail == q->head)
+	{	
+		
 		q->tail->next = p;
 		p->previous= q->tail;
 		q->tail = p;
+		q->head->next = q->tail;
+	}
+	else {
+		q->tail->next = p;
+		p->previous= q->tail;
+		q->tail = p;
+
 	}
 }
 
